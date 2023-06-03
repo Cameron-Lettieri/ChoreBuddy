@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './styles/GroupListPage.css';
 
 function GroupListPage() {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [newGroupName, setNewGroupName] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         fetchGroups();
@@ -15,10 +17,10 @@ function GroupListPage() {
         try {
             const response = await axios.get('http://localhost:8000/api/groups');
             console.log('Response data:', response.data); // Log the response data
-            const groupsWithNames = response.data.map(group => ({
+            const groupsWithNames = response.data.map((group) => ({
                 id: group.id,
                 name: group.name,
-                choreGroupNames: group.choreGroupNames || [] // Add a default value for choreGroupNames
+                choreGroupNames: group.choreGroupNames || [], // Add a default value for choreGroupNames
             }));
             setGroups(groupsWithNames);
             setLoading(false);
@@ -57,39 +59,53 @@ function GroupListPage() {
         }
     };
 
+    const filteredGroups = groups.filter((group) => group.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
     return (
-        <div>
-            <h1>Group List</h1>
+        <div className="group-list-container">
+            <div className="group-list-header">
+                <h1 className="group-list-title">Group List</h1>
+                <form className="group-list-form" onSubmit={handleCreateGroup}>
+                    <input
+                        type="text"
+                        placeholder="Group Name"
+                        value={newGroupName}
+                        onChange={(e) => setNewGroupName(e.target.value)}
+                        className="group-list-input"
+                    />
+                    <button type="submit">Create Group</button>
+                </form>
+            </div>
+            <input
+                type="text"
+                placeholder="Search Groups"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="group-list-search"
+            />
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (
                 <p>{error}</p>
-            ) : groups.length === 0 ? (
+            ) : filteredGroups.length === 0 ? (
                 <p>No groups found.</p>
             ) : (
-                <ul>
-                    {groups.map((group) => (
+                <ul className="group-list">
+                    {filteredGroups.map((group) => (
                         <li key={group.id}>
                             {group.name}
                             <ul>
-                                {group.choreGroupNames.map(choreGroupName => (
+                                {group.choreGroupNames.map((choreGroupName) => (
                                     <li key={choreGroupName}>{choreGroupName}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => handleJoinGroup(group.id)}>Join Group</button>
+                            <button className="group-list-button" onClick={() => handleJoinGroup(group.id)}>
+                                Join Group
+                            </button>
                         </li>
                     ))}
                 </ul>
             )}
-            <form onSubmit={handleCreateGroup}>
-                <input
-                    type="text"
-                    placeholder="Group Name"
-                    value={newGroupName}
-                    onChange={(e) => setNewGroupName(e.target.value)}
-                />
-                <button type="submit">Create Group</button>
-            </form>
         </div>
     );
 }

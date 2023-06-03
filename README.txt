@@ -13,7 +13,7 @@ Technologies Used -
 Frontend: React
 Backend: Node.js and Express.js
 Database: MySQL
-Other Tools: IntelliJ IDEA, GitHub
+Other Tools: IntelliJ IDEA, GitHub, Postman
 
 User Authentication:
 

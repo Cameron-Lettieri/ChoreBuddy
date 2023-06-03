@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './styles/UserPage.css';
 
 function UserPage() {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [choreGroups, setChoreGroups] = useState([]);
     const [newGroupName, setNewGroupName] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false); // New state for login status
+    const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('/api/user', {
-                    credentials: 'include', // Include credentials for session management
-                });
+                const response = await axios.get('/api/user', { withCredentials: true });
 
-                if (response.ok) {
-                    const userData = await response.json();
+                if (response.status === 200) {
+                    const userData = response.data;
                     setName(userData.name);
                     setLoggedIn(true);
                 } else {
                     setLoggedIn(false);
-                    navigate('/login'); // Redirect to login page if not logged in
+                    navigate('/login');
                 }
 
-                const responseGroups = await fetch('/api/groups');
-                const groupsData = await responseGroups.json();
+                const responseGroups = await axios.get('/api/groups');
+                const groupsData = responseGroups.data;
                 setChoreGroups(groupsData);
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -34,6 +34,8 @@ function UserPage() {
 
         fetchUserData();
     }, [navigate]);
+
+
     const handleAddGroup = async () => {
         try {
             const response = await fetch('/api/groups', {
@@ -114,21 +116,27 @@ function UserPage() {
     };
 
     return (
-        <div>
-            <h1>Welcome, {name}!</h1>
+        <div className="user-container">
+            <h1 className="user-title">Welcome, {name}!</h1>
 
-            <div>
+            <div className="user-section text-center">
                 <h2>Join an Existing Chore Group or Create a New Group</h2>
-                <button onClick={() => navigate('/groups')}>Browse Groups</button>
+                <button className="user-button" onClick={() => navigate('/groups')}>
+                    Browse Groups
+                </button>
             </div>
 
-            <div>
+            <div className="user-section">
                 <h2>Your Chore Groups</h2>
                 {choreGroups.map((group) => (
-                    <div key={group.id}>
+                    <div className="user-group" key={group.id}>
                         <span>{group.name}</span>
-                        <button onClick={() => handleLeaveGroup(group.id)}>Leave</button>
-                        <button onClick={() => handleSelectGroup(group.id)}>Select</button>
+                        <button className="user-button" onClick={() => handleLeaveGroup(group.id)}>
+                            Leave
+                        </button>
+                        <button className="user-button" onClick={() => handleSelectGroup(group.id)}>
+                            Select
+                        </button>
                     </div>
                 ))}
             </div>

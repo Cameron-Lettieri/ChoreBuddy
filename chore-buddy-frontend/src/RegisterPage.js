@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './styles/RegisterPage.css';
+
 
 function RegisterPage() {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -83,10 +85,11 @@ function RegisterPage() {
     };
 
     return (
-        <div>
-            <h1>Register</h1>
-            <form onSubmit={handleRegister}>
+        <div className="register-container">
+            <h1 className="register-title">Register</h1>
+            <form className="register-form" onSubmit={handleRegister}>
                 <input
+                    className="register-input"
                     type="text"
                     placeholder="Phone Number"
                     value={phoneNumber}
@@ -94,6 +97,7 @@ function RegisterPage() {
                 />
                 {errors.phoneError && <p>{errors.phoneError}</p>}
                 <input
+                    className="register-input"
                     type="password"
                     placeholder="Password"
                     value={password}
@@ -101,19 +105,21 @@ function RegisterPage() {
                 />
                 {errors.passwordError && <p>{errors.passwordError}</p>}
                 <input
+                    className="register-input"
                     type="text"
                     placeholder="Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
                 <input
+                    className="register-input"
                     type="text"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 {errors.emailError && <p>{errors.emailError}</p>}
-                <button type="submit">Register</button>
+                <button className="register-button" type="submit">Register</button>
             </form>
             {errors.errorMessage && <p>{errors.errorMessage}</p>}
         </div>

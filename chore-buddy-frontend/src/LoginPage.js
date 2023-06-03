@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './styles/LoginPage.css';
+
 
 function LoginPage() {
     const [phone_number, setPhone] = useState('');
@@ -35,22 +37,24 @@ function LoginPage() {
     };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form onSubmit={handleLogin}>
+        <div className="login-container">
+            <h1 className="login-title">Login</h1>
+            <form className="login-form" onSubmit={handleLogin}>
                 <input
+                    className="login-input"
                     type="text"
                     placeholder="Phone Number"
                     value={phone_number}
                     onChange={(e) => setPhone(e.target.value)}
                 />
                 <input
+                    className="login-input"
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit">Login</button>
+                <button className="login-button" type="submit">Login</button>
             </form>
             {errorMessage && <p>{errorMessage}</p>}
         </div>

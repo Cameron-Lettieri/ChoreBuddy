@@ -3,12 +3,14 @@ const session = require('express-session');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
+const cookieParser = require('cookie-parser');
 const WebSocket = require('ws');
 
 const app = express();
 const port = process.env.PORT || 8000;
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(
@@ -153,6 +155,12 @@ app.post('/api/login', (req, res) => {
             // You can generate a token (e.g., JWT) here and send it as a response for authentication purposes
 
             req.session.userId = user.id;
+            res.cookie('session_id', req.sessionID, {
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                httpOnly: true,
+                sameSite: 'strict',
+                // secure: true, // Enable this if using HTTPS
+            });
 
             res.status(200).json({ message: 'User logged in successfully.' });
         });
@@ -161,11 +169,15 @@ app.post('/api/login', (req, res) => {
 
 // Retrieve the user from the database based on the session
 app.get('/api/user', (req, res) => {
-    const userId = req.session.userId;
-    if (!userId) {
+    const sessionID = req.cookies.session_id;
+    if (!sessionID || sessionID !== req.sessionID) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
+    // Get the userId from the session
+    const userId = req.session.userId;
+
+    // Retrieve the user from the database based on the userId
     const getUserQuery = `SELECT * FROM users WHERE id = ?`;
     pool.query(getUserQuery, [userId], (error, results) => {
         if (error) {
@@ -181,6 +193,7 @@ app.get('/api/user', (req, res) => {
         res.status(200).json({ name: user.name });
     });
 });
+
 
 // Logout: Clear the session
 app.post('/api/logout', (req, res) => {
