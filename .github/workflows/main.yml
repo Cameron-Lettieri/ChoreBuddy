@@ -14,11 +14,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Backend Dependencies
-        working-directory: ChoreBuddy/chore-buddy-backend
+        working-directory: chore-buddy-backend
         run: npm install
 
       - name: Build Backend
-        working-directory: ChoreBuddy/chore-buddy-backend
+        working-directory: chore-buddy-backend
         run: npm run build
 
       - name: Install Frontend Dependencies
