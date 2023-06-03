@@ -1,4 +1,4 @@
-name: CI/CD
+name: Build and Test
 
 on:
   push:
@@ -6,37 +6,29 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - name: Install dependencies
+      - name: Install Backend Dependencies
+        working-directory: ChoreBuddy/chore-buddy-backend
         run: npm install
 
-      - name: Build application
+      - name: Build Backend
+        working-directory: ChoreBuddy/chore-buddy-backend
         run: npm run build
 
-      - name: Run tests
-        run: npm test
+      - name: Install Frontend Dependencies
+        working-directory: ChoreBuddy/chore-buddy-frontend
+        run: npm install
 
-      - name: Deploy to production
-        run: |
-          # Replace the deployment commands with your actual deployment process
-          # For example, if you're deploying to a server, you can use SSH or a deployment tool like Ansible or Docker
+      - name: Build Frontend
+        working-directory: ChoreBuddy/chore-buddy-frontend
+        run: npm run build
 
-          # Install required dependencies (if any)
-          npm ci --production
-
-          # Stop the existing server (if running)
-          pm2 stop server
-
-          # Start the server
-          pm2 start server.js
+      - name: Run Tests
+        working-directory: ChoreBuddy/chore-buddy-backend
+        run: npm run test
